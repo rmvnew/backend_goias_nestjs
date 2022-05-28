@@ -22,16 +22,20 @@
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^2.0.1",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mapped-types": "*",
+    "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "^8.0.3",
-    "@nestjs/platform-express": "^8.0.0",
+    "bcrypt": "^5.0.1",
+    "i": "^0.3.7",
+    "install": "^0.13.0",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.3.0",
+    "swagger-ui-express": "^4.4.0",
     "typeorm": "^0.3.4"
   },
   "devDependencies": {
