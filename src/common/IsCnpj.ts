@@ -1,3 +1,6 @@
+import { BadRequestException } from "@nestjs/common";
+import { ValidType } from "./enums";
+import { Validations } from "./utils/validations";
 
 export class IsCnpj {
 
@@ -18,13 +21,15 @@ export class IsCnpj {
         let digitos;
         let resultado;
 
+        Validations.getInstance().validateWithRegex(cnpj, ValidType.IS_CNPJ)
+
         cnpj = cnpj.replace(/[^\d]+/g, '');
 
 
-        if (cnpj == '') return false;
+        if (cnpj == '') throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
 
         if (cnpj.length != 14)
-            return false;
+            throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
 
         // Elimina CNPJs invalidos conhecidos
         if (cnpj == "00000000000000" ||
@@ -37,7 +42,7 @@ export class IsCnpj {
             cnpj == "77777777777777" ||
             cnpj == "88888888888888" ||
             cnpj == "99999999999999")
-            return false;
+            throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
 
         // Valida DVs
         tamanho = cnpj.length - 2
@@ -52,7 +57,7 @@ export class IsCnpj {
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(0))
-            return false;
+            throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
 
         tamanho = tamanho + 1;
         numeros = cnpj.substring(0, tamanho);
@@ -65,10 +70,13 @@ export class IsCnpj {
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
 
-        if (resultado != digitos.charAt(1))
-            return false;
+        if (resultado != digitos.charAt(1)) {
+            throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
+        } else {
+            return cnpj
+        }
 
-        return true;
+
 
     }
 }

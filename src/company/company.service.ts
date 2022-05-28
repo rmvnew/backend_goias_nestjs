@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ValidType } from 'src/common/enums';
 import { IsCnpj } from 'src/common/IsCnpj';
 import { Validations } from 'src/common/utils/validations';
-
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -39,13 +38,7 @@ export class CompanyService {
       ValidType.NO_SPECIAL_CHARACTER,
       ValidType.NO_MANY_SPACE)
 
-      const isCNPJ = await IsCnpj.getInstance().validarCNPJ(cnpj)
-
-      console.log(isCNPJ)
-
-      if(!isCNPJ){
-        throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
-      }
+      company.cnpj = await IsCnpj.getInstance().validarCNPJ(cnpj)
 
     company.isActive = true
 

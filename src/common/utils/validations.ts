@@ -14,29 +14,6 @@ export class Validations {
     }
 
 
-
-    // validateImageExtensions(file: BufferedFile) {
-    //     if (!this.validRegex(/(.(jpg|png|bmp|jpeg))/gm, file.originalname)) {
-    //         let extension = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length);
-    //         throw new BadRequestException(`O formato ${extension} não é suportado. Utilize extensões .jpg, .png ou .bmp!`)
-    //     }
-    // }
-   
-    // validateVideoExtensions(file: BufferedFile) {
-    //     if (!this.validRegex(/(.mp4)/gm, file.originalname)) {
-    //         let extension = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length);
-    //         throw new BadRequestException(`O formato ${extension} não é suportado. Utilize extensão .mp4!`)
-    //     }
-    // }
-
-    // validSizeFile(file: BufferedFile, currentSize: FileSize) {
-
-    //     if (file.size > currentSize) {
-    //         throw new BadRequestException('O arquivo excede o tamanho permitido.')
-    //     }
-
-    // }
-
     getValidName(name: string) {
 
         let currentName = name.toUpperCase();
@@ -64,6 +41,13 @@ export class Validations {
             if (data === ValidType.IS_NUMBER_FLOAT) {
                 if (this.validRegex(/[a-zA-Z!@#$%^&*(),?":{}|<>]/gm, str)) {
                     throw new BadRequestException(`O nome ${str}, deve conter apenas números`)
+                }
+            }
+           
+            if (data === ValidType.IS_CNPJ) {
+               
+                if (!this.validRegex(/([0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})/gm, str)) {
+                    throw new BadRequestException(`O cnpj ${str}, está com um formato inválido!! `)
                 }
             }
 
