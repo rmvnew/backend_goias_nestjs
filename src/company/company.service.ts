@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Address } from 'src/address/entities/address.entity';
 import { ValidType } from 'src/common/enums';
 import { IsCnpj } from 'src/common/IsCnpj';
 import { Validations } from 'src/common/utils/validations';
@@ -13,32 +14,48 @@ export class CompanyService {
 
   constructor(
     @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>
+    private readonly companyRepository: Repository<Company>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>
   ) { }
 
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
 
-    const { cnpj, company_fantasy_name, company_real_name } = createCompanyDto
+    const { cnpj, company_fantasy_name, company_real_name, address } = createCompanyDto
 
     const company = this.companyRepository.create(createCompanyDto)
-
+    
+    console.log(company.address)
+    
     company.company_fantasy_name = company_fantasy_name.toUpperCase()
 
     company.company_real_name = company_real_name.toUpperCase()
+
+    company.address.city = address.city.toUpperCase()
+
+    company.address.street = address.street.toUpperCase()
+
+    company.address.state = address.state.toUpperCase()
+
+    company.address.country = address.country.toUpperCase()
+
+    company.address.isActive = true
+
+    company.address = await this.addressRepository.save(company.address)
 
     Validations.getInstance().validateWithRegex(
       company.company_fantasy_name,
       ValidType.IS_STRING,
       ValidType.NO_SPECIAL_CHARACTER,
       ValidType.NO_MANY_SPACE)
-   
-      Validations.getInstance().validateWithRegex(
+
+    Validations.getInstance().validateWithRegex(
       company.company_real_name,
       ValidType.IS_STRING,
       ValidType.NO_SPECIAL_CHARACTER,
       ValidType.NO_MANY_SPACE)
 
-      company.cnpj = await IsCnpj.getInstance().validarCNPJ(cnpj)
+    company.cnpj = await IsCnpj.getInstance().validarCNPJ(cnpj)
 
     company.isActive = true
 
