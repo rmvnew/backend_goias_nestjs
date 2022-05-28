@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Address } from 'src/address/entities/address.entity';
 import { SortingType, ValidType } from 'src/common/enums';
-import { IsCnpj } from 'src/common/IsCnpj';
+import { IsCnpj } from 'src/common/utils/IsCnpj';
 import { Validations } from 'src/common/utils/validations';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';

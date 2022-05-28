@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
-import { ValidType } from "./enums";
-import { Validations } from "./utils/validations";
+import { ValidType } from "../enums";
+import { Validations } from "./validations";
 
 export class IsCnpj {
 
