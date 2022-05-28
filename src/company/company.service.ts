@@ -1,26 +1,121 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ValidType } from 'src/common/enums';
+import { IsCnpj } from 'src/common/IsCnpj';
+import { Validations } from 'src/common/utils/validations';
+
+import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Company } from './entities/company.entity';
 
 @Injectable()
 export class CompanyService {
-  create(createCompanyDto: CreateCompanyDto) {
-    return 'This action adds a new company';
+
+  constructor(
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>
+  ) { }
+
+  async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
+
+    const { cnpj, company_fantasy_name, company_real_name } = createCompanyDto
+
+    const company = this.companyRepository.create(createCompanyDto)
+
+    company.company_fantasy_name = company_fantasy_name.toUpperCase()
+
+    company.company_real_name = company_real_name.toUpperCase()
+
+    Validations.getInstance().validateWithRegex(
+      company.company_fantasy_name,
+      ValidType.IS_STRING,
+      ValidType.NO_SPECIAL_CHARACTER,
+      ValidType.NO_MANY_SPACE)
+   
+      Validations.getInstance().validateWithRegex(
+      company.company_real_name,
+      ValidType.IS_STRING,
+      ValidType.NO_SPECIAL_CHARACTER,
+      ValidType.NO_MANY_SPACE)
+
+      const isCNPJ = await IsCnpj.getInstance().validarCNPJ(cnpj)
+
+      console.log(isCNPJ)
+
+      if(!isCNPJ){
+        throw new BadRequestException(`CNPJ ${cnpj} é inválido`)
+      }
+
+    company.isActive = true
+
+    return this.companyRepository.save(company)
   }
 
-  findAll() {
-    return `This action returns all company`;
+  async findAll() {
+    return this.companyRepository.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findByCnpj(cnpj: string): Promise<Company> {
+    return this.companyRepository.findOne({
+      where: {
+        cnpj
+      }
+    })
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async findById(id: number): Promise<Company> {
+    return this.companyRepository.findOne({
+      where: {
+        company_id: id
+      }
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async update(id: number, updateCompanyDto: UpdateCompanyDto) {
+
+    const { cnpj, company_fantasy_name, company_real_name } = updateCompanyDto
+
+    const isRegistered = await this.findById(id)
+
+    if (!isRegistered) {
+      throw new NotFoundException(`Company com id: ${id} não encontrada`)
+    }
+
+
+    const companySaved = await this.companyRepository.preload({
+      company_id: id,
+      ...updateCompanyDto
+    })
+
+
+    if (cnpj) {
+      companySaved.cnpj = cnpj
+    }
+
+    if (company_real_name) {
+      companySaved.company_real_name = company_real_name
+    }
+
+    if (company_fantasy_name) {
+      companySaved.company_fantasy_name = company_fantasy_name
+    }
+
+    await this.companyRepository.save(companySaved)
+
+    return this.findById(id)
+  }
+
+  async remove(id: number) {
+
+    const companySaved = await this.findById(id)
+
+    if (!companySaved) {
+      throw new NotFoundException(`Company com id: ${id} não encontrada`)
+    }
+
+    companySaved.isActive = false
+
+    await this.companyRepository.save(companySaved)
   }
 }
