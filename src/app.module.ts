@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyModule } from './company/company.module';
 import { AddressModule } from './address/address.module';
+import { PhoneModule } from './phone/phone.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { AddressModule } from './address/address.module';
       synchronize: true
     }),
     CompanyModule,
-    AddressModule],
+    AddressModule,
+    PhoneModule],
   controllers: [],
   providers: [],
 })

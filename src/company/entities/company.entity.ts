@@ -1,5 +1,6 @@
 import { Address } from "src/address/entities/address.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Phone } from "src/phone/entities/phone.entity"
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 @Entity('COMPANY')
 export class Company {
@@ -8,7 +9,7 @@ export class Company {
     company_id: number
 
     @Column()
-    address_id:number
+    address_id: number
 
     @Column({ length: 100 })
     company_real_name: string
@@ -19,7 +20,7 @@ export class Company {
     @Column({ unique: true, length: 30 })
     cnpj: string
 
-    @Column({ name: 'is_active'})
+    @Column({ name: 'is_active' })
     isActive: boolean
 
     @CreateDateColumn({ name: 'create_at' })
@@ -29,8 +30,11 @@ export class Company {
     updateAt: string
 
     @OneToOne(() => Address, (address) => address.company)
-    @JoinColumn({name: 'address_id'})
+    @JoinColumn({ name: 'address_id' })
     address: Address
+
+    @OneToMany(() => Phone, (phone) => phone.company)
+    phones: Phone[]
 
 
 }
