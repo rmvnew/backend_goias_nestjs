@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Address } from 'src/address/entities/address.entity';
-import { ValidType } from 'src/common/enums';
+import { SortingType, ValidType } from 'src/common/enums';
 import { IsCnpj } from 'src/common/IsCnpj';
 import { Validations } from 'src/common/utils/validations';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { FilterCompany } from './dto/filter.company';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 
@@ -24,9 +26,9 @@ export class CompanyService {
     const { cnpj, company_fantasy_name, company_real_name, address } = createCompanyDto
 
     const company = this.companyRepository.create(createCompanyDto)
-    
+
     console.log(company.address)
-    
+
     company.company_fantasy_name = company_fantasy_name.toUpperCase()
 
     company.company_real_name = company_real_name.toUpperCase()
@@ -62,8 +64,38 @@ export class CompanyService {
     return this.companyRepository.save(company)
   }
 
-  async findAll() {
-    return this.companyRepository.find()
+  async findAll(filter: FilterCompany): Promise<Pagination<Company>> {
+    const { orderBy, sort, cnpj } = filter
+
+    const queryBuilder = this.companyRepository.createQueryBuilder('inf')
+      .leftJoinAndSelect('inf.address', 'address')
+      .where('inf.is_active = true')
+
+    if (cnpj) {
+      return paginate<Company>(
+        queryBuilder.where('inf.cnpj = :cnpj', { cnpj })
+          .andWhere('inf.is_active = true'), filter
+      )
+    }
+
+    if (orderBy == SortingType.ID) {
+
+      queryBuilder.orderBy('inf.iduser', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+        .where('inf.is_active = true')
+
+    } else if (orderBy == SortingType.DATE) {
+
+      queryBuilder.orderBy('inf.create_at', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+        .where('inf.is_active = true')
+
+    } else {
+
+      queryBuilder.orderBy('inf.company_real_name', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+        .where('inf.is_active = true')
+
+    }
+
+    return paginate<Company>(queryBuilder, filter)
   }
 
   async findByCnpj(cnpj: string): Promise<Company> {

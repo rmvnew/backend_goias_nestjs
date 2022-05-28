@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { FilterCompany } from './dto/filter.company';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 
@@ -18,8 +20,17 @@ export class CompanyController {
   }
 
   @Get()
-  async findAll() {
-    return this.companyService.findAll();
+  async findAll(
+    @Query() filter: FilterCompany
+  ): Promise<Pagination<Company>> {
+
+    const { limit } = filter
+
+    filter.limit = limit > 10 ? 10 : limit
+
+    filter.route = `${process.env.URL}/company`
+
+    return this.companyService.findAll(filter);
   }
 
   @Get(':id')
