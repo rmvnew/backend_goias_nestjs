@@ -1,4 +1,5 @@
 import { Address } from "src/address/entities/address.entity"
+import { Contract } from "src/contract/entities/contract.entity"
 import { Phone } from "src/phone/entities/phone.entity"
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
@@ -35,6 +36,9 @@ export class Company {
 
     @OneToMany(() => Phone, (phone) => phone.company)
     phones: Phone[]
+
+    @OneToOne(() => Contract, (contract) => contract.company)
+    contract: Contract
 
 
 }

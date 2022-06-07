@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { CreateAddressDto } from "src/address/dto/create-address.dto"
-import { CreatePhoneDto } from "src/phone/dto/create-phone.dto"
+import { CreateContractDto } from "src/contract/dto/create-contract.dto"
 
 
 
@@ -20,5 +20,8 @@ export class CreateCompanyDto {
 
     @ApiProperty({ type: [String], required: false })
     phone_numbers?: string
+
+    @ApiProperty({ type: CreateContractDto })
+    contract: CreateContractDto
 
 }

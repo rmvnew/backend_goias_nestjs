@@ -7,7 +7,7 @@ import { FilterCompany } from './dto/filter.company';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 
-@Controller('company')
+@Controller('v1/company')
 @ApiTags('Company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) { }

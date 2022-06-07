@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyModule } from './company/company.module';
 import { AddressModule } from './address/address.module';
 import { PhoneModule } from './phone/phone.module';
+import { ContractModule } from './contract/contract.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { PhoneModule } from './phone/phone.module';
     }),
     CompanyModule,
     AddressModule,
-    PhoneModule],
+    PhoneModule,
+    ContractModule],
   controllers: [],
   providers: [],
 })

@@ -5,14 +5,16 @@ import { Address } from 'src/address/entities/address.entity';
 import { SortingType, ValidType } from 'src/common/enums';
 import { IsCnpj } from 'src/common/utils/IsCnpj';
 import { Validations } from 'src/common/utils/validations';
+import { Contract } from 'src/contract/entities/contract.entity';
 import { CreatePhoneDto } from 'src/phone/dto/create-phone.dto';
-import { Phone } from 'src/phone/entities/phone.entity';
 import { PhoneService } from 'src/phone/phone.service';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { FilterCompany } from './dto/filter.company';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
+import { CreateContractDto } from 'src/contract/dto/create-contract.dto';
+import { ContractService } from 'src/contract/contract.service';
 
 @Injectable()
 export class CompanyService {
@@ -22,6 +24,7 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
+    private readonly contractService: ContractService,
     private readonly phoneService: PhoneService
   ) { }
 
@@ -32,7 +35,8 @@ export class CompanyService {
       company_fantasy_name,
       company_real_name,
       address,
-      phone_numbers
+      phone_numbers,
+      contract
     } = createCompanyDto
 
     const isRegistered = await this.findByCnpj(cnpj, company_real_name)
@@ -64,6 +68,8 @@ export class CompanyService {
     company.address.isActive = true
 
     company.address = await this.addressRepository.save(company.address)
+
+
 
     Validations.getInstance().validateWithRegex(
       company.company_fantasy_name,
@@ -97,6 +103,13 @@ export class CompanyService {
       }
     }
 
+    const contractDto: CreateContractDto = {
+      value: contract.value,
+      company: companySaved
+    }
+
+    await this.contractService.create(contractDto)
+
 
     return companySaved
   }
@@ -118,7 +131,7 @@ export class CompanyService {
 
     if (orderBy == SortingType.ID) {
 
-      queryBuilder.orderBy('inf.iduser', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+      queryBuilder.orderBy('inf.company_id', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
         .where('inf.is_active = true')
 
     } else if (orderBy == SortingType.DATE) {
