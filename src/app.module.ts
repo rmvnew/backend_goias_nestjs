@@ -5,6 +5,7 @@ import { CompanyModule } from './company/company.module';
 import { AddressModule } from './address/address.module';
 import { PhoneModule } from './phone/phone.module';
 import { ContractModule } from './contract/contract.module';
+import { PersonModule } from './person/person.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { ContractModule } from './contract/contract.module';
     CompanyModule,
     AddressModule,
     PhoneModule,
-    ContractModule],
+    ContractModule,
+    PersonModule],
   controllers: [],
   providers: [],
 })
