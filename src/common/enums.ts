@@ -38,3 +38,11 @@ export enum IsActive {
     FALSE = 0
 }
 
+export enum Exceptions {
+
+    NOT_FOUND = 'NOT_FOUND',
+    BAD_REQUEST = 'BAD_REQUEST',
+    ALREADY_EXISTS = 'ALREADY_EXISTS'
+
+}
+
