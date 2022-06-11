@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Address } from 'src/address/entities/address.entity';
 import { Exceptions } from 'src/common/enums';
 import { ErrorMsg } from 'src/common/exception/message.exception';
+import { CreatePhoneDto } from 'src/phone/dto/create-phone.dto';
+import { PhoneService } from 'src/phone/phone.service';
 import { Repository } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
@@ -12,12 +15,15 @@ export class PersonService {
 
   constructor(
     @InjectRepository(Person)
-    private readonly personRepository: Repository<Person>
+    private readonly personRepository: Repository<Person>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
+    private readonly phoneService: PhoneService
   ) { }
 
   async create(createPersonDto: CreatePersonDto): Promise<Person> {
 
-    const { person_name } = createPersonDto
+    const { person_name, phone_numbers, address } = createPersonDto
 
     const person = this.personRepository.create(createPersonDto)
 
@@ -29,9 +35,38 @@ export class PersonService {
       ErrorMsg.it().getErrMessage('person', person.person_name, Exceptions.ALREADY_EXISTS)
     }
 
+    person.address.city = address.city.toUpperCase()
+
+    person.address.street = address.street.toUpperCase()
+
+    person.address.district = address.district.toUpperCase()
+
+    person.address.state = address.state.toUpperCase()
+
+    person.address.country = address.country.toUpperCase()
+
+    person.address.isActive = true
+
+    person.address = await this.addressRepository.save(person.address)
+
     person.isActive = true
 
-    return this.personRepository.save(person)
+    const personSaved = await this.personRepository.save(person)
+
+    if (phone_numbers) {
+
+      for (let element of phone_numbers) {
+        const phoneDto: CreatePhoneDto = {
+          phone_number: element,
+          person: personSaved
+        }
+
+        await this.phoneService.create(phoneDto)
+
+      }
+    }
+
+    return personSaved
   }
 
   async findByName(person_name: string): Promise<Person> {

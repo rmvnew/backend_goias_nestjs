@@ -1,16 +1,13 @@
 import { Address } from "src/address/entities/address.entity"
 import { Contract } from "src/contract/entities/contract.entity"
 import { Phone } from "src/phone/entities/phone.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 @Entity('COMPANY')
 export class Company {
 
     @PrimaryGeneratedColumn()
     company_id: number
-
-    @Column()
-    address_id: number
 
     @Column({ length: 100 })
     company_real_name: string
@@ -29,13 +26,6 @@ export class Company {
 
     @UpdateDateColumn({ name: 'update_at' })
     updateAt: string
-
-    @OneToOne(() => Address, (address) => address.company)
-    @JoinColumn({ name: 'address_id' })
-    address: Address
-
-    @OneToMany(() => Phone, (phone) => phone.company)
-    phones: Phone[]
 
     @OneToOne(() => Contract, (contract) => contract.company)
     contract: Contract

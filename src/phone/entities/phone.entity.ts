@@ -1,4 +1,5 @@
 import { Company } from "src/company/entities/company.entity";
+import { Person } from "src/person/entities/person.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('PHONE')
@@ -8,7 +9,7 @@ export class Phone {
     phone_id: number
 
     @Column()
-    company_id: number
+    person_id: number
 
     @Column({ length: 15 })
     phone_number: string
@@ -22,8 +23,8 @@ export class Phone {
     @UpdateDateColumn({ name: 'update_at' })
     updateAt: string
 
-    @ManyToOne(() => Company, (company) => company.phones)
-    @JoinColumn({ name: 'company_id' })
-    company: Company
+    @ManyToOne(() => Person, (person) => person.phones)
+    @JoinColumn({ name: 'person_id' })
+    person: Person
 
 }

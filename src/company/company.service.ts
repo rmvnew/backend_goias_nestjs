@@ -22,8 +22,6 @@ export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
-    @InjectRepository(Address)
-    private readonly addressRepository: Repository<Address>,
     private readonly contractService: ContractService,
     private readonly phoneService: PhoneService
   ) { }
@@ -34,8 +32,6 @@ export class CompanyService {
       cnpj,
       company_fantasy_name,
       company_real_name,
-      address,
-      phone_numbers,
       contract
     } = createCompanyDto
 
@@ -45,30 +41,11 @@ export class CompanyService {
       throw new BadRequestException(`Empresa ${company_real_name} já está cadastrada!`)
     }
 
-
-
     const company = this.companyRepository.create(createCompanyDto)
-
-    console.log(company.address)
 
     company.company_fantasy_name = company_fantasy_name.toUpperCase()
 
     company.company_real_name = company_real_name.toUpperCase()
-
-    company.address.city = address.city.toUpperCase()
-
-    company.address.street = address.street.toUpperCase()
-
-    company.address.district = address.district.toUpperCase()
-
-    company.address.state = address.state.toUpperCase()
-
-    company.address.country = address.country.toUpperCase()
-
-    company.address.isActive = true
-
-    company.address = await this.addressRepository.save(company.address)
-
 
 
     Validations.getInstance().validateWithRegex(
@@ -89,19 +66,6 @@ export class CompanyService {
     company.isActive = true
 
     const companySaved = await this.companyRepository.save(company)
-
-    if (phone_numbers) {
-
-      for (let element of phone_numbers) {
-        const phoneDto: CreatePhoneDto = {
-          phone_number: element,
-          company: companySaved
-        }
-
-        await this.phoneService.create(phoneDto)
-
-      }
-    }
 
     const contractDto: CreateContractDto = {
       value: contract.value,

@@ -15,12 +15,6 @@ export class CreateCompanyDto {
     @ApiProperty()
     cnpj: string
 
-    @ApiProperty({ type: CreateAddressDto })
-    address: CreateAddressDto
-
-    @ApiProperty({ type: [String], required: false })
-    phone_numbers?: string
-
     @ApiProperty({ type: CreateContractDto })
     contract: CreateContractDto
 
