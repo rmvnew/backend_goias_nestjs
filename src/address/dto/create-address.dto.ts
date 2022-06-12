@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 
 
 export class CreateAddressDto {
+    
     @ApiProperty({ required: true })
     zipCode: string
 

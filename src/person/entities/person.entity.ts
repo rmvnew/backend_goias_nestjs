@@ -1,4 +1,5 @@
 import { Address } from "src/address/entities/address.entity";
+import { Client } from "src/client/entities/client.entity";
 import { Phone } from "src/phone/entities/phone.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -10,6 +11,15 @@ export class Person {
 
     @Column()
     person_name: string
+
+    @Column()
+    person_rg: string
+
+    @Column()
+    person_cpf: string
+
+    @Column()
+    person_email: string
 
     @Column()
     address_id: number
@@ -29,4 +39,7 @@ export class Person {
     @OneToOne(() => Address, (address) => address.person)
     @JoinColumn({ name: 'address_id' })
     address: Address
+
+    @OneToOne(() => Client, (client) => client.person)
+    client: Client;
 }

@@ -35,19 +35,8 @@ export class PersonService {
       ErrorMsg.it().getErrMessage('person', person.person_name, Exceptions.ALREADY_EXISTS)
     }
 
-    person.address.city = address.city.toUpperCase()
 
-    person.address.street = address.street.toUpperCase()
-
-    person.address.district = address.district.toUpperCase()
-
-    person.address.state = address.state.toUpperCase()
-
-    person.address.country = address.country.toUpperCase()
-
-    person.address.isActive = true
-
-    person.address = await this.addressRepository.save(person.address)
+    person.address = address
 
     person.isActive = true
 
@@ -115,7 +104,7 @@ export class PersonService {
     const { isActive: status } = isPersonRegistered
 
     if (!isPersonRegistered) {
-      throw new NotFoundException(`person registered with this id does not exist`)
+      ErrorMsg.it().getErrMessage('person', `${id}`, Exceptions.NOT_FOUND)
     }
 
     isPersonRegistered.isActive = status === true ? false : true

@@ -14,19 +14,7 @@ export class Validations {
     }
 
 
-    getValidName(name: string) {
-
-        let currentName = name.toUpperCase();
-
-        this.validateWithRegex(
-            currentName,
-            ValidType.NO_SPECIAL_CHARACTER,
-            ValidType.NO_MANY_SPACE,
-            ValidType.IS_STRING,
-        )
-
-        return currentName;
-    }
+   
 
     validateWithRegex(str: string, ...valid) {
 
