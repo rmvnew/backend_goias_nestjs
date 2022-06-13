@@ -19,7 +19,7 @@ export class ClientService {
     private readonly clientRepository: Repository<Client>,
     private readonly personService: PersonService,
     private readonly addressService: AddressService
-    
+
   ) { }
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
@@ -64,14 +64,19 @@ export class ClientService {
   }
 
   async findById(id: number): Promise<Client> {
-    return this.clientRepository.findOne({
-      where: {
-        client_id: id
-      }
-    })
+    return this.clientRepository.createQueryBuilder('client')
+      .leftJoinAndSelect('client.person', 'person')
+      .leftJoinAndSelect('person.address','address')
+      .where('client.client_id = :client_id', { client_id: id })
+      .getOne()
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
+
+    const {
+      person: { person_cpf, person_email, person_name, person_rg, phone_numbers },
+      address: { zipCode, address_number, city, country, district, state, street }
+    } = updateClientDto
 
     const isRegistered = await this.findById(id)
 
@@ -79,13 +84,38 @@ export class ClientService {
       ErrorMsg.it().getErrMessage('client', `${id}`, Exceptions.NOT_FOUND)
     }
 
+
+
     const client = await this.clientRepository.preload({
       client_id: id,
       ...updateClientDto
     })
 
 
+
+    const address: CreateAddressDto = {
+      zipCode: zipCode,
+      address_number: address_number,
+      city: city,
+      country: country,
+      district: district,
+      state: state,
+      street: street
+    }
+
+    const person: CreatePersonDto = {
+      address: await this.addressService.update(isRegistered.person.address.address_id, address),
+      person_cpf: person_cpf,
+      person_email: person_email,
+      person_name: person_name,
+      person_rg: person_rg,
+      phone_numbers: phone_numbers
+    }
+
+    client.person = await this.personService.update(isRegistered.person.person_id, person)
+
     await this.clientRepository.save(client)
+
     return this.findById(id)
   }
 
