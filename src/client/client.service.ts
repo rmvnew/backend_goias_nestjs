@@ -66,9 +66,17 @@ export class ClientService {
   async findById(id: number): Promise<Client> {
     return this.clientRepository.createQueryBuilder('client')
       .leftJoinAndSelect('client.person', 'person')
-      .leftJoinAndSelect('person.address','address')
+      .leftJoinAndSelect('person.address', 'address')
       .where('client.client_id = :client_id', { client_id: id })
       .getOne()
+  }
+
+  async findByRegisterCompany(id: number): Promise<Client> {
+    return this.clientRepository.findOne({
+      where: {
+        client_id: id
+      }
+    })
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {

@@ -1,7 +1,8 @@
 import { Address } from "src/address/entities/address.entity"
+import { Client } from "src/client/entities/client.entity"
 import { Contract } from "src/contract/entities/contract.entity"
 import { Phone } from "src/phone/entities/phone.entity"
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 @Entity('COMPANY')
 export class Company {
@@ -29,6 +30,18 @@ export class Company {
 
     @OneToOne(() => Contract, (contract) => contract.company)
     contract: Contract
+
+    @ManyToMany(() => Client, {eager: true})
+    @JoinTable({
+        name: 'CLIENT_COMPANY',
+        joinColumn: { 
+            name: 'company_id', 
+            referencedColumnName: 'company_id' },
+        inverseJoinColumn: { 
+            name: 'client_id', 
+            referencedColumnName: 'client_id' }
+    })
+    clients: Client[]
 
 
 }

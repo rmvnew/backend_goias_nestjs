@@ -13,6 +13,7 @@ import { PersonModule } from 'src/person/person.module';
     PersonModule
   ],
   controllers: [ClientController],
-  providers: [ClientService]
+  providers: [ClientService],
+  exports: [ClientService]
 })
 export class ClientModule { }

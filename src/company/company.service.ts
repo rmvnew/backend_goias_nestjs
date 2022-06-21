@@ -15,6 +15,8 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 import { CreateContractDto } from 'src/contract/dto/create-contract.dto';
 import { ContractService } from 'src/contract/contract.service';
+import { ClientService } from 'src/client/client.service';
+import { Client } from 'src/client/entities/client.entity';
 
 @Injectable()
 export class CompanyService {
@@ -23,7 +25,9 @@ export class CompanyService {
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
     private readonly contractService: ContractService,
-    private readonly phoneService: PhoneService
+    private readonly phoneService: PhoneService,
+    private readonly clientService: ClientService
+
   ) { }
 
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
@@ -32,7 +36,7 @@ export class CompanyService {
       cnpj,
       company_fantasy_name,
       company_real_name,
-      contract
+      clients_id
     } = createCompanyDto
 
     const isRegistered = await this.findByCnpj(cnpj, company_real_name)
@@ -62,27 +66,31 @@ export class CompanyService {
 
     company.cnpj = await IsCnpj.getInstance().validarCNPJ(cnpj)
 
+    let listClients = []
+
+    for (let client of clients_id) {
+      
+      listClients.push(await this.clientService.findByRegisterCompany(client))
+    }
+
+    company.clients = listClients
+
+   
+
 
     company.isActive = true
 
-    const companySaved = await this.companyRepository.save(company)
-
-    const contractDto: CreateContractDto = {
-      value: contract.value,
-      company: companySaved
-    }
-
-    await this.contractService.create(contractDto)
+    return this.companyRepository.save(company)
 
 
-    return companySaved
   }
 
   async findAll(filter: FilterCompany): Promise<Pagination<Company>> {
     const { orderBy, sort, cnpj } = filter
 
     const queryBuilder = this.companyRepository.createQueryBuilder('inf')
-      .leftJoinAndSelect('inf.address', 'address')
+      .leftJoinAndSelect('inf.clients', 'clients')
+      .leftJoinAndSelect('clients.person', 'person')
       // .leftJoinAndSelect('inf.phones', 'phones')
       .where('inf.is_active = true')
 
@@ -131,7 +139,12 @@ export class CompanyService {
 
   async update(id: number, updateCompanyDto: UpdateCompanyDto) {
 
-    const { cnpj, company_fantasy_name, company_real_name } = updateCompanyDto
+    const {
+      cnpj,
+      company_fantasy_name,
+      company_real_name,
+      clients_id
+    } = updateCompanyDto
 
     const isRegistered = await this.findById(id)
 
@@ -153,6 +166,17 @@ export class CompanyService {
     if (company_real_name) {
       companySaved.company_real_name = company_real_name
     }
+
+    let listClients = []
+
+    for (let client of clients_id) {
+      
+      listClients.push(await this.clientService.findByRegisterCompany(client))
+    }
+
+    companySaved.clients = listClients
+
+    
 
     if (company_fantasy_name) {
       companySaved.company_fantasy_name = company_fantasy_name

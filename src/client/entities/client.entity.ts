@@ -1,5 +1,6 @@
+import { Company } from "src/company/entities/company.entity";
 import { Person } from "src/person/entities/person.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity('CLIENT')
@@ -24,4 +25,5 @@ export class Client {
     @JoinColumn({ name: 'person_id' })
     person: Person
 
+    
 }
