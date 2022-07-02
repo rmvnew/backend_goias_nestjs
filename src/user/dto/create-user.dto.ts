@@ -12,6 +12,9 @@ export class CreateUserDto {
     @ApiProperty()
     user_password: string
 
+    @ApiProperty()
+    user_profile_id: number
+
     @ApiProperty({ required: true, type: CreatePersonDto })
     person: CreatePersonDto
 

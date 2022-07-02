@@ -1,5 +1,6 @@
 import { Person } from "src/person/entities/person.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { ProfileEntity } from "src/profile/entities/profile.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('USER')
 export class User {
@@ -35,6 +36,13 @@ export class User {
     @OneToOne(() => Person, (person) => person.user)
     @JoinColumn({ name: 'person_id' })
     person: Person
+    
+    @Column()
+    user_profile_id: number
+    
+    @ManyToOne(() => ProfileEntity, (profile) => profile.users)
+    @JoinColumn({ name: 'user_profile_id' })
+    profile: ProfileEntity
 
 
 }

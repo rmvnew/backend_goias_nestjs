@@ -1,10 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { AddressService } from 'src/address/address.service';
 import { CreateAddressDto } from 'src/address/dto/create-address.dto';
+import { SortingType } from 'src/common/enums';
 import { hash } from 'src/common/utils/hash';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 import { PersonService } from 'src/person/person.service';
+import { FilterUser } from 'src/profile/dto/filter.user';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -68,13 +71,49 @@ export class UserService {
 
   }
 
-  async findAll() {
-    return this.userRepository.find()
+  async findAll(filter: FilterUser): Promise<Pagination<User>> {
+
+    const { user_name, sort, orderBy } = filter
+
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.person', 'person')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('person.address', 'address')
+
+    if (user_name) {
+      queryBuilder
+        .where('user.user_name like :user_name', { user_name: `%${user_name}%` })
+
+    }
+
+    if (orderBy == SortingType.ID) {
+
+      queryBuilder.orderBy('user.user_id', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+
+    } else if (orderBy == SortingType.DATE) {
+
+      queryBuilder.orderBy('user.create_at', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+
+    } else {
+      queryBuilder.orderBy('person.person_name', `${sort === 'DESC' ? 'DESC' : 'ASC'}`)
+    }
+
+
+    const page = await paginate<User>(queryBuilder, filter)
+
+    page.links.first = page.links.first === '' ? '' : `${page.links.first}&sort=${sort}&orderBy=${orderBy}`
+    page.links.previous = page.links.previous === '' ? '' : `${page.links.previous}&sort=${sort}&orderBy=${orderBy}`
+    page.links.last = page.links.last === '' ? '' : `${page.links.last}&sort=${sort}&orderBy=${orderBy}`
+    page.links.next = page.links.next === '' ? '' : `${page.links.next}&sort=${sort}&orderBy=${orderBy}`
+
+    return page
   }
 
   async findById(id: number): Promise<User> {
     return this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.person', 'person')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('person.address', 'address')
       .where('user.user_id = :user_id', { user_id: id })
       .getOne()
   }

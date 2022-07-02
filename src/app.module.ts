@@ -8,6 +8,7 @@ import { ContractModule } from './contract/contract.module';
 import { PersonModule } from './person/person.module';
 import { ClientModule } from './client/client.module';
 import { UserModule } from './user/user.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { UserModule } from './user/user.module';
     ContractModule,
     PersonModule,
     ClientModule,
-    UserModule],
+    UserModule,
+    ProfileModule],
   controllers: [],
   providers: [],
 })
