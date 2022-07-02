@@ -5,6 +5,7 @@ import { GlobalExceptionFilter } from './common/exception/global.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('/api/v1')
 
   app.useGlobalFilters(new GlobalExceptionFilter)
   

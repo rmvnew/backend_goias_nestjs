@@ -66,6 +66,14 @@ export class PersonService {
     })
   }
 
+  async findByCpf(cpf: string) {
+    return this.personRepository.findOne({
+      where: {
+        person_cpf: cpf
+      }
+    })
+  }
+
   async findAll() {
     return this.personRepository.find()
   }

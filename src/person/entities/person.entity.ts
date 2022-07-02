@@ -1,6 +1,7 @@
 import { Address } from "src/address/entities/address.entity";
 import { Client } from "src/client/entities/client.entity";
 import { Phone } from "src/phone/entities/phone.entity";
+import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('PERSON')
@@ -42,4 +43,7 @@ export class Person {
 
     @OneToOne(() => Client, (client) => client.person)
     client: Client;
+
+    @OneToOne(() => User, (user) => user.person)
+    user: User;
 }

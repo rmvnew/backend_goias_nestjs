@@ -24,9 +24,8 @@ export class AddressService {
 
     Validations.getInstance().validateWithRegex(
       address_number,
-      ValidType.NO_MANY_SPACE,
-      ValidType.NO_SPECIAL_CHARACTER,
-      ValidType.IS_NUMBER)
+      ValidType.NO_SPACE,
+      ValidType.NO_SPECIAL_CHARACTER)
     address.address_number = address_number.toUpperCase()
 
     Validations.getInstance().validateWithRegex(
