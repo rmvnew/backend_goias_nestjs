@@ -4,9 +4,11 @@ https://docs.nestjs.com/controllers#controllers
 
 import { Controller, UseGuards, Post, Body } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
-import { AuthService } from './shared/auth.service';
-import { LocalAuthGuard } from './shared/local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+
+
 
 @ApiTags('Login')
 @Controller('auth')
