@@ -11,6 +11,8 @@ import { UserModule } from './user/user.module';
 import { ProfileModule } from './profile/profile.module';
 import { AuthModule } from './auth/auth.module';
 
+
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -33,6 +35,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     AuthModule,
     ProfileModule,
+   
   ],
   controllers: [],
   providers: [],

@@ -1,13 +1,18 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseGuards } from '@nestjs/common';
+
 import { ApiTags } from '@nestjs/swagger';
+
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+  
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { FilterCompany } from './dto/filter.company';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
+// import { JwtAuthGuard } from '../../src/auth/guards/jwt-auth.guard'
 
-@Controller('v1/company')
+@Controller('company')
 @ApiTags('Company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) { }
@@ -20,6 +25,8 @@ export class CompanyController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  
   async findAll(
     @Query() filter: FilterCompany
   ): Promise<Pagination<Company>> {
@@ -53,3 +60,5 @@ export class CompanyController {
     return this.companyService.remove(+id);
   }
 }
+
+

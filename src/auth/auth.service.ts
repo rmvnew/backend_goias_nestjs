@@ -11,6 +11,7 @@ import { hash } from 'src/common/utils/hash';
 import { ProfileEntity } from 'src/profile/entities/profile.entity';
 import { LoginDTO } from './dto/login.dto';
 import Tokens from './interfaces/tokens';
+import { User } from 'src/user/entities/user.entity';
 
 
 @Injectable()
@@ -36,10 +37,15 @@ export class AuthService {
     }
 
     async login(user: any) {
+
+        const userSaved = await this.userService.findByLogin(user.login);
+
         const payload = {
-            sub: user.id_user,
-            name: user.name,
-            email: user.email,
+
+            user: userSaved.person.person_name,
+            email: userSaved.person.person_email,
+            profile: userSaved.profile
+            
         }
         return {
             access_token: this.jwtService.sign(payload),
@@ -50,17 +56,17 @@ export class AuthService {
 
         const user = await this.userService.findByLogin(login.login)
 
-       
+
 
         if (!user) {
             throw new HttpException('User with this email does not exist', HttpStatus.NOT_FOUND);
         }
 
-        console.log(user);
+
 
         const { access_token, refresh_token } = await this.getTokens(user.person.person_email, user.person.person_name, user.profile);
 
-       
+
         const hashed_refresh_token = await hash(refresh_token);
 
         await this.userService.updateRefreshToken(user.user_id, hashed_refresh_token);
@@ -77,7 +83,7 @@ export class AuthService {
     }
 
     async getTokens(email: string, name: string, profile: ProfileEntity): Promise<Tokens> {
-        
+
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync({
                 email: email,
@@ -100,7 +106,7 @@ export class AuthService {
                 })
         ]);
 
-        
+
 
         return {
             access_token: access_token,
