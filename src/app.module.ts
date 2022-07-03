@@ -9,6 +9,7 @@ import { PersonModule } from './person/person.module';
 import { ClientModule } from './client/client.module';
 import { UserModule } from './user/user.module';
 import { ProfileModule } from './profile/profile.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -30,8 +31,10 @@ import { ProfileModule } from './profile/profile.module';
     PersonModule,
     ClientModule,
     UserModule,
-    ProfileModule],
+    AuthModule,
+    ProfileModule,
+  ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

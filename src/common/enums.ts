@@ -1,4 +1,7 @@
-
+export enum VerifyCredentials {
+    verify_email = 'email',
+    verify_password = 'password'
+}
 
 export enum SortingType {
     ID = 'ID',

@@ -14,6 +14,7 @@ import { PersonModule } from 'src/person/person.module';
     PersonModule
   ],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [UserService],
+  exports:[UserService]
 })
 export class UserModule { }

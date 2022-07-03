@@ -16,6 +16,8 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UserService {
 
+
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -118,6 +120,15 @@ export class UserService {
       .getOne()
   }
 
+  async findByLogin(userLogin: string) {
+    return this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.person', 'person')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('person.address', 'address')
+      .where('user.user_login = :user_login', { user_login: userLogin })
+      .getOne()
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
 
     const {
@@ -182,5 +193,13 @@ export class UserService {
     return this.findById(id)
 
 
+  }
+
+  async updateRefreshToken(id: number, refresh_token: string) {
+    return this.userRepository.createQueryBuilder()
+      .update(User)
+      .set({ refresh_token: refresh_token })
+      .where("user_id = :id", { id })
+      .execute();
   }
 }
